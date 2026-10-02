@@ -12,6 +12,8 @@
 
 </div>
 
+> **[⬇ Download the single-file build v1.0.0](https://github.com/Ekkh1300/cosmic-focus-console/releases/download/v1.0.0/keshan.html)** — one file, nothing to install, no internet; just double-click.
+
 A productivity / focus-timer app with a cosmic “liquid glass” interface — a floating
 space console with a rotating 3D planet behind it.
 
