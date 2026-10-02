@@ -1,0 +1,257 @@
+/* =========================================================================
+   LIQUID GLASS MATERIAL SYSTEM
+   Multi-layer optical material: tinted substrate + specular + refraction
+   ring + illuminated border + chromatic edge + depth shadow.
+   Each surface class carries a different "material depth".
+   ========================================================================= */
+
+:root {
+  --g-blur: 18px;
+  --g-sat: 150%;
+  --g-refract: 10px;
+  --g-refract-blur: 5px;
+  --g-tint: 0.075;
+  --g-spec: 0.1;
+  --g-border: 0.09;
+  --g-chroma: 0.05;
+  --g-depth: 0 26px 64px -34px rgba(0, 0, 0, 0.95);
+  --gx: 50%;
+  --gy: 18%;
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+}
+
+/* ---- glass intensity presets ------------------------------------------ */
+[data-glass='subtle'] {
+  --g-blur: 9px;
+  --g-sat: 132%;
+  --g-refract: 6px;
+  --g-refract-blur: 3px;
+  --g-tint: 0.05;
+  --g-spec: 0.07;
+  --g-chroma: 0.03;
+}
+[data-glass='balanced'] {
+  --g-blur: 18px;
+  --g-sat: 150%;
+  --g-refract: 10px;
+  --g-refract-blur: 5px;
+  --g-tint: 0.075;
+  --g-spec: 0.1;
+  --g-chroma: 0.05;
+}
+[data-glass='strong'] {
+  --g-blur: 30px;
+  --g-sat: 175%;
+  --g-refract: 16px;
+  --g-refract-blur: 8px;
+  --g-tint: 0.1;
+  --g-spec: 0.14;
+  --g-chroma: 0.07;
+}
+
+/* ---- base material ----------------------------------------------------- */
+.glass {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--radius, 20px);
+  color: var(--text-1);
+
+  /* 1 · substrate tint + top sheen + mouse-reactive specular */
+  background-image:
+    radial-gradient(
+      340px circle at var(--gx) var(--gy),
+      rgba(255, 255, 255, calc(var(--g-spec) * 1.4)),
+      rgba(255, 255, 255, 0) 62%
+    ),
+    radial-gradient(
+      130% 90% at 50% -18%,
+      rgba(255, 255, 255, calc(var(--g-spec) * 0.95)),
+      rgba(255, 255, 255, 0) 58%
+    ),
+    linear-gradient(
+      155deg,
+      rgba(255, 255, 255, calc(var(--g-tint) * 1.5)),
+      rgba(255, 255, 255, calc(var(--g-tint) * 0.35)) 42%,
+      rgba(126, 140, 255, calc(var(--g-tint) * 0.5)) 100%
+    );
+  background-color: rgba(9, 12, 26, calc(var(--g-tint) * 1.1));
+
+  /* 2 · backdrop refraction base */
+  -webkit-backdrop-filter: blur(var(--g-blur)) saturate(var(--g-sat)) brightness(1.03);
+  backdrop-filter: blur(var(--g-blur)) saturate(var(--g-sat)) brightness(1.03);
+
+  /* 3 · depth + micro edge */
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, calc(var(--g-border) * 2.1)),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.42),
+    inset 0 0 44px -28px rgba(160, 180, 255, 0.6),
+    0 0 0 1px rgba(255, 255, 255, calc(var(--g-border) * 0.85)),
+    var(--g-depth);
+}
+
+/* 4 · refraction ring — a second backdrop sample masked to the rim, so the
+       edge of the panel visibly bends the world behind it. */
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  padding: var(--g-refract);
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(var(--g-refract-blur)) saturate(165%) brightness(1.14)
+    contrast(1.05);
+  backdrop-filter: blur(var(--g-refract-blur)) saturate(165%) brightness(1.14) contrast(1.05);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* 5 · illuminated hairline border + chromatic aberration at the rim */
+.glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      118deg,
+      rgba(255, 255, 255, 0.72),
+      rgba(255, 255, 255, 0.06) 24%,
+      rgba(255, 255, 255, 0) 52%,
+      rgba(124, 232, 255, calc(var(--g-chroma) * 6)) 78%,
+      rgba(255, 120, 220, calc(var(--g-chroma) * 5))
+    ),
+    linear-gradient(
+      300deg,
+      rgba(255, 255, 255, 0.34),
+      rgba(255, 255, 255, 0.02) 40%,
+      rgba(0, 0, 0, 0)
+    );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* content sits above the optical layers */
+.glass > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- material depths --------------------------------------------------- */
+.glass--primary {
+  --g-depth: 0 40px 90px -40px rgba(0, 0, 0, 1), 0 0 90px -50px var(--accent-glow);
+  border-radius: 34px;
+}
+
+.glass--panel {
+  --g-tint: calc(var(--g-tint) * 0.92);
+  --g-depth: 0 28px 70px -38px rgba(0, 0, 0, 0.98);
+}
+
+.glass--control {
+  --g-blur: calc(var(--g-blur) * 0.72);
+  --g-refract: 5px;
+  --g-refract-blur: 3px;
+  --g-tint: calc(var(--g-tint) * 1.35);
+  --radius: 14px;
+  background-color: rgba(12, 16, 34, calc(var(--g-tint) * 1.6));
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.07),
+    0 12px 26px -18px rgba(0, 0, 0, 0.95);
+}
+
+.glass--ghost {
+  --g-tint: 0.03;
+  --g-spec: 0.05;
+  --g-refract: 4px;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.09),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* fusion: soft light bleed so neighbouring glass panels feel joined */
+.glass--fused {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.14),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 70px -34px var(--accent-glow),
+    var(--g-depth);
+}
+
+/* ---- accent-tinted surfaces ------------------------------------------- */
+.glass--accent {
+  background-color: color-mix(in srgb, var(--accent) calc(var(--g-tint) * 100%), rgba(8, 11, 24, 0.72));
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1px color-mix(in srgb, var(--accent) 26%, transparent),
+    0 22px 50px -30px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+/* ---- light theme adjustments ------------------------------------------ */
+[data-theme='light'] .glass {
+  background-color: rgba(255, 255, 255, calc(var(--g-tint) * 4.2));
+  background-image:
+    radial-gradient(
+      340px circle at var(--gx) var(--gy),
+      rgba(255, 255, 255, calc(var(--g-spec) * 3)),
+      rgba(255, 255, 255, 0) 62%
+    ),
+    radial-gradient(130% 90% at 50% -18%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.9),
+      rgba(238, 242, 255, 0.66) 45%,
+      rgba(226, 232, 255, 0.78)
+    );
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 0 rgba(20, 26, 56, 0.08),
+    0 0 0 1px rgba(20, 26, 56, 0.07),
+    0 24px 60px -34px rgba(30, 40, 90, 0.42);
+  -webkit-backdrop-filter: blur(var(--g-blur)) saturate(140%) brightness(1.06);
+  backdrop-filter: blur(var(--g-blur)) saturate(140%) brightness(1.06);
+}
+[data-theme='light'] .glass::after {
+  background-image: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(160, 170, 220, 0.28) 30%,
+    rgba(255, 255, 255, 0.1) 60%,
+    rgba(90, 200, 255, 0.35) 85%,
+    rgba(255, 120, 200, 0.3)
+  );
+}
+[data-theme='light'] .glass--control {
+  background-color: rgba(255, 255, 255, 0.62);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    0 0 0 1px rgba(20, 26, 56, 0.08),
+    0 10px 22px -18px rgba(30, 40, 90, 0.5);
+}
+
+/* ---- reduced motion / fx off ------------------------------------------ */
+[data-motion='off'] .glass::before {
+  display: none;
+}
+[data-motion='off'] .glass {
+  -webkit-backdrop-filter: blur(var(--g-blur));
+  backdrop-filter: blur(var(--g-blur));
+}

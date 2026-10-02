@@ -1,0 +1,273 @@
+@import 'tailwindcss';
+@import './styles/font.css';
+@import './styles/glass.css';
+@import './styles/animations.css';
+
+/* =========================================================================
+   COSMIC THEME TOKENS
+   ========================================================================= */
+
+@theme {
+  --font-sans:
+    'Vazirmatn', 'Segoe UI', Tahoma, system-ui, -apple-system, sans-serif;
+  --color-ink-1: rgba(240, 243, 255, 0.94);
+  --color-ink-2: rgba(206, 213, 240, 0.66);
+  --color-ink-3: rgba(190, 198, 232, 0.42);
+  --radius-glass: 20px;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* accents (overridden per data-accent) */
+  --accent: #a78bfa;
+  --accent-2: #7c3aed;
+  --accent-soft: rgba(167, 139, 250, 0.16);
+  --accent-glow: rgba(139, 92, 246, 0.55);
+  --cyan: #67e8f9;
+  --pink: #f472b6;
+
+  --bg-0: #04050c;
+  --bg-1: #070a18;
+  --bg-2: #0b1024;
+
+  --text-1: rgba(240, 243, 255, 0.94);
+  --text-2: rgba(206, 213, 240, 0.7);
+  --text-3: rgba(196, 204, 238, 0.6);
+
+  --ok: #4ade80;
+  --warn: #fbbf24;
+  --danger: #fb7185;
+
+  --ring: color-mix(in srgb, var(--accent) 60%, white);
+}
+
+/* per-accent aliases so a chip can preview its own colour before selection */
+:root {
+  --accent-purple: #a78bfa;
+  --accent-blue: #7aa2ff;
+  --accent-cyan: #67e8f9;
+  --accent-pink: #f472b6;
+}
+
+[data-accent='purple'] {
+  --accent: #a78bfa;
+  --accent-2: #7c3aed;
+  --accent-soft: rgba(167, 139, 250, 0.16);
+  --accent-glow: rgba(139, 92, 246, 0.55);
+}
+[data-accent='blue'] {
+  --accent: #7aa2ff;
+  --accent-2: #3b82f6;
+  --accent-soft: rgba(122, 162, 255, 0.16);
+  --accent-glow: rgba(59, 130, 246, 0.55);
+}
+[data-accent='cyan'] {
+  --accent: #67e8f9;
+  --accent-2: #06b6d4;
+  --accent-soft: rgba(103, 232, 249, 0.15);
+  --accent-glow: rgba(34, 211, 238, 0.5);
+}
+[data-accent='pink'] {
+  --accent: #f472b6;
+  --accent-2: #ec4899;
+  --accent-soft: rgba(244, 114, 182, 0.15);
+  --accent-glow: rgba(236, 72, 153, 0.5);
+}
+
+/* light appearance */
+[data-theme='light'] {
+  color-scheme: light;
+  --bg-0: #eef1fa;
+  --bg-1: #e6ebf9;
+  --bg-2: #dfe6f7;
+  --text-1: rgba(14, 18, 40, 0.94);
+  --text-2: rgba(32, 40, 76, 0.76);
+  --text-3: rgba(40, 48, 84, 0.66);
+}
+
+/* =========================================================================
+   BASE
+   ========================================================================= */
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg-0);
+  color: var(--text-1);
+  overflow: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'ss01', 'cv01';
+}
+
+/* numbers never inherit direction — keeps timers/charts stable in RTL */
+.num {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: #fff;
+}
+
+/* focus visibility — never sacrificed for looks */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(160, 175, 255, 0.24) transparent;
+}
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    rgba(160, 175, 255, 0.28),
+    rgba(120, 140, 255, 0.14)
+  );
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(rgba(180, 195, 255, 0.5), rgba(140, 160, 255, 0.26));
+  background-clip: padding-box;
+}
+
+/* =========================================================================
+   UTILITIES
+   ========================================================================= */
+
+.text-1 {
+  color: var(--text-1);
+}
+.text-2 {
+  color: var(--text-2);
+}
+.text-3 {
+  color: var(--text-3);
+}
+.accent-text {
+  color: var(--accent);
+}
+
+.label-caps {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+/* page shell */
+.shell {
+  position: relative;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.page-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+/* magnetic / physical press */
+.pressable {
+  transition:
+    transform var(--dur-fast) var(--ease-out-quint),
+    box-shadow var(--dur-med) var(--ease-out-quint),
+    background-color var(--dur-med) var(--ease-out-quint),
+    border-color var(--dur-med) var(--ease-out-quint);
+}
+.pressable:hover {
+  transform: translateY(-2px);
+}
+.pressable:active {
+  transform: translateY(1px) scale(0.985);
+  transition-duration: 70ms;
+}
+
+/* liquid distortion used on hover for primary controls */
+.liquid-warp {
+  filter: url(#liquidWarp);
+}
+
+.card-hover {
+  transition:
+    transform var(--dur-med) var(--ease-out-quint),
+    box-shadow var(--dur-med) var(--ease-out-quint);
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.16),
+    0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 30px 60px -34px rgba(0, 0, 0, 1),
+    0 0 60px -34px var(--accent-glow);
+}
+
+/* thin glowing divider */
+.divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.12),
+    transparent
+  );
+}
+
+/* skip link — kept out of the grid flow so it never occupies a track */
+.skip-link {
+  position: fixed;
+  inset-block-start: -70px;
+  inset-inline-start: 18px;
+  z-index: 200;
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  background: rgba(12, 16, 34, 0.92);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent),
+    0 16px 34px -20px rgba(0, 0, 0, 1);
+  text-decoration: none;
+  transition: inset-block-start 180ms var(--ease-out-expo);
+}
+.skip-link:focus {
+  inset-block-start: 18px;
+}

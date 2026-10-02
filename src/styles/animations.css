@@ -1,0 +1,184 @@
+/* =========================================================================
+   MOTION LANGUAGE — smooth, never abrupt. Everything eases out.
+   ========================================================================= */
+
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --dur-fast: 160ms;
+  --dur-med: 320ms;
+  --dur-slow: 640ms;
+}
+
+/* --- ambient: breathing panel while the timer runs ---------------------- */
+@keyframes glass-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.14),
+      0 0 0 1px rgba(255, 255, 255, 0.07),
+      0 0 80px -46px var(--accent-glow);
+  }
+  50% {
+    transform: scale(1.012);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+      0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent),
+      0 0 130px -40px var(--accent-glow);
+  }
+}
+.is-breathing {
+  animation: glass-breathe 5.4s var(--ease-out-quint) infinite;
+}
+
+/* --- energy ring around the timer --------------------------------------- */
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes orbit-spin-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+    filter: blur(14px);
+  }
+  50% {
+    opacity: 0.75;
+    filter: blur(22px);
+  }
+}
+
+/* --- final minute escalation -------------------------------------------- */
+@keyframes final-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.is-final .timer-ring-glow {
+  animation: final-pulse 1.6s ease-in-out infinite;
+}
+
+/* --- completion burst ---------------------------------------------------- */
+@keyframes burst {
+  0% {
+    transform: scale(0.35);
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@keyframes soft-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* --- ripple on press ------------------------------------------------------ */@keyframes ripple {
+  from {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.ripple {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+  animation: ripple 620ms var(--ease-out-expo) forwards;
+}
+
+/* --- task complete sweep -------------------------------------------------- */
+@keyframes sweep {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(110%);
+  }
+}
+.task-sweep::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 30%, transparent),
+    transparent
+  );
+  animation: sweep 700ms var(--ease-out-expo) forwards;
+  pointer-events: none;
+}
+
+/* --- float / drift -------------------------------------------------------- */
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* --- shimmer skeleton ----------------------------------------------------- */
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* --- motion policy -------------------------------------------------------- */
+[data-motion='reduced'] *,
+[data-motion='reduced'] *::before,
+[data-motion='reduced'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 120ms !important;
+}
+
+[data-motion='off'] *,
+[data-motion='off'] *::before,
+[data-motion='off'] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-motion='full'] *,
+  [data-motion='full'] *::before,
+  [data-motion='full'] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 120ms !important;
+  }
+}
