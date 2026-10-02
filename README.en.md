@@ -12,7 +12,7 @@
 
 </div>
 
-> **[⬇ Download the single-file build v1.0.0](https://github.com/Ekkh1300/cosmic-focus-console/releases/download/v1.0.0/keshan.html)** — one file, nothing to install, no internet; just double-click.
+> **[⬇ Download the single-file build v1.1.0](https://github.com/Ekkh1300/cosmic-focus-console/releases/download/v1.1.0/keshan.html)** — one file, nothing to install, no internet; just double-click.
 
 A productivity / focus-timer app with a cosmic “liquid glass” interface — a floating
 space console with a rotating 3D planet behind it.
@@ -63,6 +63,9 @@ after the first load.
 ## Features
 
 **Timer**
+- The timer page is the timer: one centred, full-height console, no side panels at all
+- A **فارسی / English** button sits in the top bar next to the clock — one click switches
+  locale (including `dir`), no trip to the settings page
 - Five productivity modes: Pomodoro, deep work, study, short task, custom
 - Three phases — focus / short break / long break — with a floating split bar
 - **Custom duration** next to the phase picker: a stepper plus quick chips, applied to

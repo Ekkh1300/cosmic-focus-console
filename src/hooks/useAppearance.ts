@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useInsertionEffect, useState } from 'react'
 
 import { useSelector } from '../store/appStore'
 
@@ -25,6 +25,19 @@ export function useAppearance(): void {
     return () => mq.removeEventListener('change', onChange)
   }, [])
 
+  /*
+   * `dir` must be on <html> before the layout phase, not after: flipping the
+   * locale re-orders the bottom nav, and that nav measures the physical offset
+   * of the active button while it places its sliding indicator. An insertion
+   * effect lands before layout effects (a plain effect would land after), so the
+   * measurement always sees the final direction.
+   */
+  useInsertionEffect(() => {
+    const root = document.documentElement
+    root.lang = settings.lang
+    root.dir = settings.lang === 'fa' ? 'rtl' : 'ltr'
+  }, [settings.lang])
+
   useEffect(() => {
     const root = document.documentElement
     const dark = settings.theme === 'system' ? systemDark : settings.theme === 'dark'
@@ -41,12 +54,9 @@ export function useAppearance(): void {
           ? 'off'
           : 'reduced'
 
-    root.lang = settings.lang
-    root.dir = settings.lang === 'fa' ? 'rtl' : 'ltr'
-
     const meta = document.querySelector('meta[name="theme-color"]')
     if (meta) meta.setAttribute('content', dark ? '#05060d' : '#eef1fa')
-  }, [settings.theme, settings.accent, settings.glass, settings.animations, settings.lang, systemDark])
+  }, [settings.theme, settings.accent, settings.glass, settings.animations, systemDark])
 }
 
 /** True when heavy motion should be avoided for any reason. */

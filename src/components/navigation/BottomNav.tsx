@@ -20,6 +20,9 @@ const ITEMS: { id: PageId; icon: LucideIcon }[] = [
 export function BottomNav() {
   const t = useT()
   const page = useSelector((s) => s.page)
+  // switching locale flips `dir`, which re-orders the buttons — the indicator has
+  // to be measured again or it stays on the physical slot of the old layout
+  const lang = useSelector((s) => s.settings.lang)
   const rootRef = useRef<HTMLElement>(null)
   const [metric, setMetric] = useState({ left: 0, width: 0 })
 
@@ -39,13 +42,15 @@ export function BottomNav() {
 
   useLayoutEffect(() => {
     measure()
-  }, [measure])
+  }, [measure, lang])
 
   useLayoutEffect(() => {
     const root = rootRef.current
     if (!root || typeof ResizeObserver === 'undefined') return
     const ro = new ResizeObserver(() => measure())
     ro.observe(root)
+    // labels change width between locales, so watch the buttons too
+    root.querySelectorAll<HTMLElement>('button[data-nav]').forEach((el) => ro.observe(el))
     return () => ro.disconnect()
   }, [measure])
 

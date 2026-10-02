@@ -127,6 +127,55 @@
   text-transform: capitalize;
 }
 
+/* language switch — one tap, always next to the clock */
+.lang-toggle {
+  --radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 13px;
+  flex: none;
+  cursor: pointer;
+  font: inherit;
+  color: var(--text-1);
+}
+.lang-toggle__icon {
+  color: var(--accent);
+  flex: none;
+}
+.lang-toggle__pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+}
+.lang-toggle__opt {
+  color: var(--text-3);
+  transition: color var(--dur-med) var(--ease-out-quint);
+}
+.lang-toggle__opt.is-active {
+  color: var(--accent);
+  text-shadow: 0 0 14px var(--accent-glow);
+}
+.lang-toggle__opt + .lang-toggle__opt {
+  position: relative;
+  padding-inline-start: 8px;
+}
+.lang-toggle__opt + .lang-toggle__opt::before {
+  content: '';
+  position: absolute;
+  inset-block: 1px;
+  inset-inline-start: 0;
+  width: 1px;
+  background: linear-gradient(rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.04));
+}
+.lang-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .topbar__status {
   display: flex;
   align-items: center;
@@ -740,19 +789,17 @@
   display: flex;
 }
 
+/* the timer page is a single centred column — the console is the whole page */
 .timer-grid {
   display: grid;
-  grid-template-columns: 296px minmax(0, 1fr) 296px;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
   gap: clamp(14px, 1.6vw, 26px);
   width: 100%;
   align-items: stretch;
   min-height: 0;
 }
 
-.timer-grid__side {
-  min-height: 0;
-  display: flex;
-}
 .timer-grid__center {
   display: flex;
   flex-direction: column;
@@ -800,16 +847,6 @@
   justify-content: center;
   padding-top: 4px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.stats-rail__grid {
-  display: grid;
-  gap: 9px;
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  align-content: start;
-  padding: 0 2px;
 }
 
 /* ----------------------------------------------------------------- ORB -- */
@@ -2431,16 +2468,6 @@ kbd {
 
 @media (max-height: 740px) {
   .topbar__status {
-    display: none;
-  }
-}
-
-/* sidebars collapse before anything starts to overlap */
-@media (max-width: 1240px) {
-  .timer-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .timer-grid__side {
     display: none;
   }
 }

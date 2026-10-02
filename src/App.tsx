@@ -6,6 +6,7 @@ import { SvgDefs } from './components/background/SvgDefs'
 import { BottomNav } from './components/navigation/BottomNav'
 import { NoticeBanner, type NoticeTone } from './components/common/NoticeBanner'
 import { Clock } from './components/common/Clock'
+import { LangToggle } from './components/common/LangToggle'
 import { TimerPage } from './pages/TimerPage'
 import { TasksPage } from './pages/TasksPage'
 import { StatisticsPage } from './pages/StatisticsPage'
@@ -182,6 +183,7 @@ export default function App() {
                   : t('idle_hint')}
             </span>
           </div>
+          <LangToggle />
           <Clock />
         </div>
       </header>
